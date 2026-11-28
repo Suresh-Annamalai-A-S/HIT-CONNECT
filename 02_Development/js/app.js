@@ -410,7 +410,7 @@ document.getElementById('toggle-student-pw').addEventListener('click', () => tog
 document.getElementById('toggle-staff-pw').addEventListener('click', () => togglePw('staff-password-input'));
 
 document.getElementById('fill-demo-student').addEventListener('click', () => {
-  document.getElementById('student-id-input').value = '720826104001';
+  document.getElementById('student-id-input').value = '720826104095';
   document.getElementById('student-password-input').value = '01-01-2006';
 });
 document.getElementById('fill-demo-staff').addEventListener('click', () => {
