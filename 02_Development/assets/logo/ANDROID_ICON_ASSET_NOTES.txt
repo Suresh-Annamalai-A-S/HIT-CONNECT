@@ -1,0 +1,14 @@
+HIT Connect — Theme-Aware Android Icon & Logo Assets
+
+1. Official Logo Assets (Unmodified Originals):
+   - assets/logo/HIT_Official_Logo_Light.png : Official dark-lettering logo for Light Theme surfaces.
+   - assets/logo/HIT_Official_Logo_Dark.png  : Official white-lettering logo for Dark Theme surfaces.
+   - assets/logo/HIT_Official_Logo.png       : Default fallback (dark-lettering logo).
+
+2. Android Adaptive & Theme-Aware Launcher Icons (assets/android_res/):
+   - drawable/ic_launcher_foreground.png & ic_launcher_background.png       : Light/default adaptive icon (dark-lettering logo centered in 62% safe zone on #F8FAFC).
+   - drawable-night/ic_launcher_foreground.png & ic_launcher_background.png : Dark-theme adaptive icon (white-lettering logo centered in 62% safe zone on #0F172A).
+   - drawable/ic_launcher_monochrome.png                                    : Android 13+ Material You themed monochrome icon layer.
+   - mipmap-anydpi-v26/ic_launcher.xml & ic_launcher_round.xml              : Adaptive icon definitions referencing background, foreground, and monochrome layers.
+   - mipmap-{mdpi..xxxhdpi}/ & mipmap-{mdpi..xxxhdpi}-night/                : Legacy density launcher icons for launchers without adaptive icon support.
+   - drawable/hit_splash_logo.png & drawable-night/hit_splash_logo.png      : Theme-aware native splash logo assets.

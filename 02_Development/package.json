@@ -1,0 +1,23 @@
+{
+  "name": "hit-connect",
+  "version": "1.0.0",
+  "description": "HIT Connect \u2014 Campus Information Portal Android App (Academic Prototype)",
+  "private": true,
+  "scripts": {
+    "prepare-www": "node -e \"const fs=require('fs'); fs.rmSync('www',{recursive:true,force:true}); fs.mkdirSync('www/assets',{recursive:true}); ['index.html','css','js'].forEach(p=>fs.cpSync(p,'www/'+p,{recursive:true})); fs.cpSync('assets/logo','www/assets/logo',{recursive:true});\"",
+    "cap:add:android": "npm run prepare-www && npx cap add android && npm run sync:android-icons",
+    "cap:sync": "npm run prepare-www && npx cap sync android && npm run sync:android-icons",
+    "sync:android-icons": "node -e \"const fs=require('fs'), path=require('path'); const resDir='android/app/src/main/res'; if(!fs.existsSync(resDir)) process.exit(0); for(const d of fs.readdirSync(resDir)){   if(/^(mipmap-|drawable)/.test(d)){     const full=path.join(resDir,d);     if(fs.statSync(full).isDirectory()){       for(const f of fs.readdirSync(full)){         if(/^ic_launcher/.test(f)) fs.rmSync(path.join(full,f),{force:true});       }     }   } } fs.cpSync('assets/android_res', resDir, {recursive:true, force:true}); console.log('Synced official HIT launcher icons to', resDir);\""
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.1",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/network": "^6.0.2",
+    "@capacitor/status-bar": "^6.0.1",
+    "@supabase/supabase-js": "^2.45.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}

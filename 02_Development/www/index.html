@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#F8FAFC" />
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('hit_connect_theme_v1') || 'system';
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var effective = saved === 'system' ? (prefersDark ? 'dark' : 'light') : saved;
+        if (effective !== 'dark' && effective !== 'light') effective = 'light';
+        var root = document.documentElement;
+        root.setAttribute('data-theme', effective);
+        root.setAttribute('data-theme-mode', saved);
+        if (effective === 'dark') root.classList.add('dark');
+        root.style.colorScheme = effective;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', effective === 'dark' ? '#0B1220' : '#F8FAFC');
+      } catch (e) {}
+    })();
+  </script>
+  <title>HIT Connect — Hindusthan Institute of Technology, Coimbatore</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/favicon-192x192.png" />
+  <link rel="apple-touch-icon" href="assets/logo/favicon-192x192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="js/tailwind-config.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/loader.css" />
+  <script src="js/config.js"></script>
+</head>
+<body class="text-[#18212F] min-h-screen antialiased">
+
+  <!-- ==================== THEME-AWARE INSTITUTIONAL SPLASH SCREEN ==================== -->
+  <div id="hit-startup-loader" role="status" aria-live="polite" aria-label="Loading HIT Connect">
+    <div class="hit-loader-shell">
+      <div class="hit-loader-logo-wrap">
+        <img
+          data-hit-logo
+          src="assets/logo/HIT_Official_Logo.png"
+          alt="Hindusthan Institute of Technology Logo"
+          class="hit-loader-logo"
+          onerror="window.handleHitLogoError(this)"
+        />
+        <span class="hit-loader-monogram hidden" aria-hidden="true">HIT</span>
+      </div>
+      <p class="hit-loader-kicker">Hindusthan Institute of Technology</p>
+      <h1 class="hit-loader-title">HIT Connect</h1>
+      <p class="hit-loader-subtitle">One Campus. One Connection. Every Opportunity.</p>
+      <div class="hit-loader-indicator-wrap">
+        <div class="hit-loader-spinner" aria-hidden="true"></div>
+        <p id="hit-loader-status-text" class="hit-loader-status">Initializing Campus Portal<span class="hit-loader-dots" aria-hidden="true"></span></p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== UNIFIED GLASS LOGIN SCREEN ==================== -->
+  <div id="login-screen" class="min-h-screen flex flex-col">
+    <div class="hit-top-stripe" aria-hidden="true"></div>
+    <div id="login-demo-banner" class="bg-gold-50/85 backdrop-blur-md border-b border-gold-200/80 text-gold-800 text-xs px-4 py-2">
+      <div class="max-w-4xl mx-auto flex items-center justify-between gap-2 text-left">
+        <div class="flex items-center gap-2 min-w-0">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-gold-700 shrink-0" aria-hidden="true"></i>
+          <span class="leading-snug"><strong>DEMO ENVIRONMENT</strong> — Information and activities shown here are sample data and are not official college records.</span>
+        </div>
+        <button id="btn-theme-login" type="button" title="Appearance & Theme Settings" class="shrink-0 min-h-[32px] px-2.5 rounded-lg glass-btn-secondary text-[11px] font-semibold inline-flex items-center gap-1.5">
+          <i data-theme-toggle-icon data-lucide="sun" class="w-3.5 h-3.5" aria-hidden="true"></i>
+          <span data-theme-toggle-label>Auto</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center px-4 py-6">
+      <div class="w-full max-w-md text-center mb-5">
+        <div class="inline-flex items-center justify-center gap-3.5 text-left">
+          <div class="hit-logo-frame w-20 h-20 rounded-2xl p-2 shadow-md">
+            <img data-hit-logo src="assets/logo/HIT_Official_Logo.png" alt="Hindusthan Institute of Technology Logo" class="hit-logo-img" onerror="window.handleHitLogoError(this)" />
+            <span class="hit-logo-fallback hidden text-xl" aria-hidden="true">HIT</span>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-crimson-700">Hindusthan Institute of Technology</p>
+            <h1 class="hit-serif text-2xl sm:text-3xl font-bold text-[#18212F] leading-tight mt-0.5">HIT Connect</h1>
+            <p class="text-xs font-medium text-[#64748B] mt-0.5">One Campus. One Connection. Every Opportunity.</p>
+          </div>
+        </div>
+      </div>
+
+      <section aria-labelledby="unified-login-heading" class="w-full max-w-md glass-panel overflow-hidden">
+        <div class="px-5 pt-5 pb-4 border-b border-slate-200/70 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <h2 id="unified-login-heading" class="text-lg font-bold text-[#18212F]">Sign In</h2>
+            <span id="active-role-badge" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-crimson-50/90 text-crimson-700 border border-crimson-200">Student Portal</span>
+          </div>
+
+          <!-- Primary Role Selector: Student | Manager -->
+          <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-200/50 border border-white/70" role="tablist" aria-label="Primary Login Role">
+            <button id="tab-role-student" type="button" role="tab" aria-selected="true" class="min-h-[44px] px-3 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-1.5 glass-btn-primary">
+              <i data-lucide="graduation-cap" class="w-4 h-4" aria-hidden="true"></i> Student
+            </button>
+            <button id="tab-role-staff" type="button" role="tab" aria-selected="false" class="min-h-[44px] px-3 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+              <i data-lucide="shield-check" class="w-4 h-4" aria-hidden="true"></i> Manager
+            </button>
+          </div>
+
+          <!-- Manager Sub-Roles: Faculty | Administrator -->
+          <div id="staff-subrole-wrap" class="hidden space-y-1.5 pt-1">
+            <span id="staff-account-type-label" class="block text-xs font-semibold text-[#64748B]">Manager Role</span>
+            <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-200/50 border border-white/70" role="radiogroup" aria-labelledby="staff-account-type-label">
+              <button id="staff-role-faculty" type="button" role="radio" aria-checked="true" class="min-h-[40px] px-3 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 bg-white/90 text-[#18212F] shadow-sm">
+                <i data-lucide="user-check" class="w-3.5 h-3.5" aria-hidden="true"></i> Faculty
+              </button>
+              <button id="staff-role-admin" type="button" role="radio" aria-checked="false" class="min-h-[40px] px-3 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+                <i data-lucide="settings" class="w-3.5 h-3.5" aria-hidden="true"></i> Administrator
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-5">
+          <!-- Student Form -->
+          <form id="student-login-form" novalidate class="space-y-4">
+            <div>
+              <label for="student-id-input" class="block text-xs font-semibold text-[#18212F] mb-1.5">Student Register Number <span class="text-crimson-600">*</span></label>
+              <input id="student-id-input" type="text" inputmode="numeric" autocomplete="username" placeholder="e.g. 720826104001" required class="w-full min-h-[44px] px-3.5 text-sm glass-input rounded-xl" />
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="student-password-input" class="block text-xs font-semibold text-[#18212F]">Password (Date of Birth) <span class="text-crimson-600">*</span></label>
+                <span class="text-[11px] text-[#64748B]">Demo Mode</span>
+              </div>
+              <div class="relative">
+                <input id="student-password-input" type="password" autocomplete="off" placeholder="DD-MM-YYYY (simulated demo input)" required class="w-full min-h-[44px] pl-3.5 pr-12 text-sm glass-input rounded-xl" />
+                <button id="toggle-student-pw" type="button" aria-label="Show student password" aria-pressed="false" class="touch-target absolute right-0 top-0 flex items-center justify-center text-slate-500 hover:text-slate-800 rounded-r-xl">
+                  <i data-lucide="eye" class="w-4 h-4" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            <div id="student-login-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3.5 py-2.5"></div>
+            <button type="submit" class="w-full min-h-[44px] px-4 rounded-xl glass-btn-primary text-sm font-semibold flex items-center justify-center gap-2">
+              <i data-lucide="log-in" class="w-4 h-4" aria-hidden="true"></i> Login as Student
+            </button>
+            <div class="rounded-xl glass-subtle px-3.5 py-3 text-xs space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-semibold text-[#18212F]">DEMO DATA — Sample Student Accounts</span>
+                <button id="fill-demo-student" type="button" class="text-crimson-600 font-semibold hover:underline py-1">Fill Demo</button>
+              </div>
+              <p class="text-[11px] text-[#64748B] leading-relaxed">
+                Try <code class="font-mono text-[#18212F]">720826104001</code> (ECE, Sem I), <code class="font-mono text-[#18212F]">720825101012</code> (AERO, Sem III), or <code class="font-mono text-[#18212F]">720823105008</code> (MECH, Sem VII).
+              </p>
+            </div>
+          </form>
+
+          <!-- Manager Form (Faculty / Administrator — No Public Faculty Self-Registration) -->
+          <form id="staff-login-form" novalidate class="hidden space-y-4">
+            <div>
+              <label for="staff-id-input" class="block text-xs font-semibold text-[#18212F] mb-1.5">Official Email / Employee ID <span class="text-crimson-600">*</span></label>
+              <input id="staff-id-input" type="text" autocomplete="username" placeholder="e.g. faculty.demo@example.com" required class="w-full min-h-[44px] px-3.5 text-sm glass-input rounded-xl" />
+            </div>
+            <div>
+              <label for="staff-password-input" class="block text-xs font-semibold text-[#18212F] mb-1.5">Password <span class="text-crimson-600">*</span></label>
+              <div class="relative">
+                <input id="staff-password-input" type="password" autocomplete="current-password" placeholder="Enter manager password" required class="w-full min-h-[44px] pl-3.5 pr-12 text-sm glass-input rounded-xl" />
+                <button id="toggle-staff-pw" type="button" aria-label="Show manager password" aria-pressed="false" class="touch-target absolute right-0 top-0 flex items-center justify-center text-slate-500 hover:text-slate-800 rounded-r-xl">
+                  <i data-lucide="eye" class="w-4 h-4" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            <div id="staff-login-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3.5 py-2.5"></div>
+            <button type="submit" class="w-full min-h-[44px] px-4 rounded-xl glass-btn-navy text-sm font-semibold flex items-center justify-center gap-2">
+              <i data-lucide="log-in" class="w-4 h-4" aria-hidden="true"></i> <span id="staff-login-btn-text">Login as Faculty</span>
+            </button>
+            <p class="text-[11px] text-[#64748B] text-center">Faculty accounts are provisioned exclusively by HIT Administrators. Self-registration is disabled.</p>
+            <div class="rounded-xl glass-subtle px-3.5 py-3 text-xs space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span id="staff-demo-title" class="font-semibold text-[#18212F]">DEMO DATA — Faculty Account</span>
+                <button id="fill-demo-staff" type="button" class="text-crimson-600 font-semibold hover:underline py-1">Fill Demo</button>
+              </div>
+              <div id="staff-demo-creds" class="text-[11px] text-[#64748B] font-mono">faculty.demo@example.com &middot; faculty-demo-2026</div>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ==================== AUTHENTICATED GLASS APP SHELL ==================== -->
+  <div id="app-shell" class="hidden pb-28 md:pb-10">
+    <div class="hit-top-stripe" aria-hidden="true"></div>
+
+    <!-- Persistent Demo Environment Transparency Banner (hidden automatically when Supabase backend is configured) -->
+    <div id="app-demo-banner" class="bg-gold-50/90 backdrop-blur-md border-b border-gold-200/80 text-gold-800 text-[11px] px-4 py-1.5">
+      <div class="max-w-6xl mx-auto flex items-center gap-2">
+        <i data-lucide="flask-conical" class="w-3.5 h-3.5 text-gold-700 shrink-0" aria-hidden="true"></i>
+        <span class="font-medium">DEMO ENVIRONMENT — Information and activities shown here are sample data and are not official college records.</span>
+      </div>
+    </div>
+
+    <!-- Frosted Sticky Header -->
+    <header class="sticky top-0 z-30 glass-nav border-b">
+      <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+        <button id="brand-home-btn" type="button" class="flex items-center gap-2.5 min-w-0 text-left rounded-lg">
+          <div class="hit-logo-frame w-10 h-10 sm:w-11 sm:h-11 rounded-xl p-1.5 shadow-sm">
+            <img data-hit-logo src="assets/logo/HIT_Official_Logo.png" alt="Hindusthan Institute of Technology Logo" class="hit-logo-img" onerror="window.handleHitLogoError(this)" />
+            <span class="hit-logo-fallback hidden text-xs" aria-hidden="true">HIT</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="hit-serif text-base sm:text-lg font-bold text-[#18212F] leading-tight truncate">HIT Connect</span>
+              <span id="header-env-badge" class="hidden sm:inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-gold-50/90 text-gold-800 border border-gold-200">Demo Mode</span>
+            </div>
+            <p class="text-[11px] text-[#64748B] truncate hidden sm:block">Hindusthan Institute of Technology, Coimbatore</p>
+          </div>
+        </button>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <div id="session-user-pill" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/70 border border-white/80 shadow-sm text-xs"></div>
+          <button id="btn-theme-settings" type="button" title="Appearance & Theme Settings" aria-label="Appearance & Theme Settings" class="min-h-[40px] px-2.5 rounded-xl glass-btn-secondary text-xs font-semibold inline-flex items-center gap-1.5 transition">
+            <i data-theme-toggle-icon data-lucide="sun" class="w-3.5 h-3.5" aria-hidden="true"></i>
+            <span data-theme-toggle-label class="hidden lg:inline">Auto</span>
+          </button>
+          <button id="btn-reset-demo" type="button" title="Demo Utility: Reset Sample Data" class="min-h-[40px] px-2.5 rounded-xl border border-gold-200 bg-gold-50/85 text-gold-800 hover:bg-gold-100 text-xs font-semibold inline-flex items-center gap-1.5 transition">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5" aria-hidden="true"></i>
+            <span class="hidden lg:inline">Reset Demo</span>
+          </button>
+          <button id="btn-logout" type="button" class="min-h-[40px] px-3 rounded-xl glass-btn-secondary text-xs font-semibold inline-flex items-center gap-1.5">
+            <i data-lucide="log-out" class="w-3.5 h-3.5" aria-hidden="true"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop & Tablet 7-Section Navigation -->
+      <nav class="hidden md:block border-t border-slate-200/60" aria-label="Primary Navigation">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-0.5 overflow-x-auto no-scrollbar" id="desktop-nav">
+            <button data-tab="home" type="button" class="nav-btn shrink-0 min-h-[44px] px-3 text-xs lg:text-sm font-medium border-b-2 transition flex items-center gap-1.5">
+              <i data-lucide="home" class="w-4 h-4" aria-hidden="true"></i> Home
+            </button>
+            <button data-tab="academics" type="button" class="nav-btn shrink-0 min-h-[44px] px-3 text-xs lg:text-sm font-medium border-b-2 transition flex items-center gap-1.5">
+              <i data-lucide="book-open" class="w-4 h-4" aria-hidden="true"></i> Academics
+            </button>
+            <button data-tab="opportunities" type="button" class="nav-btn shrink-0 min-h-[44px] px-3 text-xs lg:text-sm font-medium border-b-2 transition flex items-center gap-1.5">
+              <i data-lucide="briefcase" class="w-4 h-4" aria-hidden="true"></i> Opportunities
+            </button>
+            <button data-tab="updates" type="button" class="nav-btn shrink-0 min-h-[44px] px-3 text-xs lg:text-sm font-medium border-b-2 transition flex items-center gap-1.5">
+              <i data-lucide="bell" class="w-4 h-4" aria-hidden="true"></i> Campus Updates
+            </button>
+            <button data-tab="people" type="button" class="nav-btn shrink-0 min-h-[44px] px-3 text-xs lg:text-sm font-medium border-b-2 transition flex items-center gap-1.5">
+              <i data-lucide="users" class="w-4 h-4" aria-hidden="true"></i> People
+            </button>
+            <button data-tab="services" type="button" class="nav-btn shrink-0 min-h-[44px] px-3 text-xs lg:text-sm font-medium border-b-2 transition flex items-center gap-1.5">
+              <i data-lucide="building-2" class="w-4 h-4" aria-hidden="true"></i> Campus Services
+            </button>
+            <button data-tab="department" type="button" class="nav-btn shrink-0 min-h-[44px] px-3 text-xs lg:text-sm font-medium border-b-2 transition flex items-center gap-1.5">
+              <i data-lucide="landmark" class="w-4 h-4" aria-hidden="true"></i> My Department
+            </button>
+          </div>
+          <button id="btn-submit-desktop" type="button" class="hidden shrink-0 min-h-[36px] items-center gap-1.5 px-3.5 rounded-lg glass-btn-primary text-xs font-semibold">
+            <i data-lucide="plus" class="w-3.5 h-3.5" aria-hidden="true"></i> Create Information
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 pt-4 space-y-5">
+
+      <!-- Persistent Glass Universal Campus Search Bar -->
+      <section class="glass-panel p-3.5 sm:p-4 space-y-2.5" aria-label="Universal Campus Search">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true"></i>
+            <label for="global-search" class="sr-only">What are you looking for?</label>
+            <input
+              id="global-search"
+              type="search"
+              placeholder="What are you looking for? (e.g. ECE, internship, exam cell, syllabus...)"
+              class="w-full min-h-[44px] pl-10 pr-11 text-sm glass-input rounded-xl"
+            />
+            <button id="clear-search" type="button" class="hidden touch-target absolute right-0 top-0 flex items-center justify-center text-slate-400 hover:text-slate-700" aria-label="Clear search">
+              <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="dept-filter" class="sr-only">Filter by department</label>
+            <select id="dept-filter" class="w-full sm:w-52 min-h-[44px] px-3 text-sm glass-input rounded-xl">
+              <option value="ALL">All Departments</option>
+            </select>
+            <button id="btn-submit-mobile" type="button" class="hidden md:hidden shrink-0 min-h-[44px] items-center justify-center gap-1 px-3.5 rounded-xl glass-btn-primary text-xs font-semibold">
+              <i data-lucide="plus" class="w-4 h-4" aria-hidden="true"></i> Create
+            </button>
+          </div>
+        </div>
+
+        <!-- Suggested Searches -->
+        <div id="search-suggestions-bar" class="flex flex-wrap items-center gap-1.5 text-xs">
+          <span class="text-[11px] font-semibold text-[#64748B] mr-1">Suggested:</span>
+          <button type="button" data-suggest="internship" class="suggest-chip px-2.5 py-1 rounded-full bg-white/75 border border-white/80 hover:border-crimson-300 hover:text-crimson-700 text-[#18212F] font-medium shadow-sm transition">internship</button>
+          <button type="button" data-suggest="ECE" class="suggest-chip px-2.5 py-1 rounded-full bg-white/75 border border-white/80 hover:border-crimson-300 hover:text-crimson-700 text-[#18212F] font-medium shadow-sm transition">ECE</button>
+          <button type="button" data-suggest="scholarship" class="suggest-chip px-2.5 py-1 rounded-full bg-white/75 border border-white/80 hover:border-crimson-300 hover:text-crimson-700 text-[#18212F] font-medium shadow-sm transition">scholarship</button>
+          <button type="button" data-suggest="exam cell" class="suggest-chip px-2.5 py-1 rounded-full bg-white/75 border border-white/80 hover:border-crimson-300 hover:text-crimson-700 text-[#18212F] font-medium shadow-sm transition">exam cell</button>
+          <button type="button" data-suggest="library" class="suggest-chip px-2.5 py-1 rounded-full bg-white/75 border border-white/80 hover:border-crimson-300 hover:text-crimson-700 text-[#18212F] font-medium shadow-sm transition">library</button>
+        </div>
+
+        <!-- Search History Section with Clear All Action -->
+        <div id="search-history-section" class="pt-2.5 border-t border-slate-200/60 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
+              <i data-lucide="history" class="w-3.5 h-3.5 text-crimson-600" aria-hidden="true"></i>
+              <span>Search History</span>
+            </div>
+            <button id="btn-clear-history" type="button" class="hidden min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-semibold text-crimson-600 hover:text-crimson-700 hover:bg-crimson-50/90 transition">
+              Clear All
+            </button>
+          </div>
+          <div id="recent-searches-wrap" class="flex flex-wrap items-center gap-1.5 text-xs"></div>
+        </div>
+
+        <div id="search-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+      </section>
+
+      <!-- Dynamic View Outlet -->
+      <div id="view-outlet" class="space-y-5"></div>
+    </main>
+
+    <!-- Institutional Footer -->
+    <footer class="max-w-6xl mx-auto px-4 pt-6 pb-4 mt-8 border-t border-slate-200/70 text-xs text-[#64748B]">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="hit-logo-frame w-9 h-9 rounded-lg p-1.5">
+            <img data-hit-logo src="assets/logo/HIT_Official_Logo.png" alt="Hindusthan Institute of Technology Logo" class="hit-logo-img" onerror="window.handleHitLogoError(this)" />
+            <span class="hit-logo-fallback hidden text-[10px]" aria-hidden="true">HIT</span>
+          </div>
+          <div>
+            <p class="font-semibold text-[#18212F]">Hindusthan Institute of Technology, Coimbatore</p>
+            <p class="text-[11px]">HIT Connect &middot; One Campus. One Connection. Every Opportunity.</p>
+          </div>
+        </div>
+        <div id="footer-env-note" class="text-[11px] sm:text-right">DEMO ENVIRONMENT &middot; Local browser storage (simulated until Supabase backend is configured)</div>
+      </div>
+    </footer>
+
+    <!-- Mobile iOS-Inspired Frosted More Menu -->
+    <div id="mobile-more-menu" class="hidden md:hidden ios-more-popover space-y-1" role="menu" aria-label="More Sections">
+      <div class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#64748B]">More Sections</div>
+      <button data-tab="updates" type="button" role="menuitem" class="more-nav-btn w-full min-h-[44px] flex items-center gap-2.5 px-3 rounded-xl text-sm font-medium text-[#18212F] hover:bg-white/80 transition">
+        <i data-lucide="bell" class="w-4 h-4 text-crimson-600 shrink-0" aria-hidden="true"></i>
+        <span>Campus Updates</span>
+      </button>
+      <button data-tab="services" type="button" role="menuitem" class="more-nav-btn w-full min-h-[44px] flex items-center gap-2.5 px-3 rounded-xl text-sm font-medium text-[#18212F] hover:bg-white/80 transition">
+        <i data-lucide="building-2" class="w-4 h-4 text-navy-800 shrink-0" aria-hidden="true"></i>
+        <span>Campus Services</span>
+      </button>
+      <button data-tab="department" type="button" role="menuitem" class="more-nav-btn w-full min-h-[44px] flex items-center gap-2.5 px-3 rounded-xl text-sm font-medium text-[#18212F] hover:bg-white/80 transition">
+        <i data-lucide="landmark" class="w-4 h-4 text-gold-700 shrink-0" aria-hidden="true"></i>
+        <span>My Department</span>
+      </button>
+      <div class="my-1 border-t border-slate-200/70"></div>
+      <button id="btn-theme-mobile" type="button" role="menuitem" class="w-full min-h-[44px] flex items-center justify-between gap-2.5 px-3 rounded-xl text-sm font-medium text-[#18212F] hover:bg-white/80 transition">
+        <span class="flex items-center gap-2.5">
+          <i data-theme-toggle-icon data-lucide="sun" class="w-4 h-4 text-crimson-600 shrink-0" aria-hidden="true"></i>
+          <span>Appearance &amp; Theme</span>
+        </span>
+        <span data-theme-toggle-label class="text-[11px] font-semibold text-[#64748B]">Auto</span>
+      </button>
+    </div>
+
+    <!-- Mobile iOS-Inspired Floating Glass Navigation Dock (5 Slots) -->
+    <nav class="md:hidden ios-floating-dock" aria-label="Mobile Navigation">
+      <div class="grid grid-cols-5 gap-1">
+        <button data-tab="home" type="button" class="mnav-btn ios-dock-btn">
+          <i data-lucide="home" class="w-[19px] h-[19px]" aria-hidden="true"></i>
+          <span class="truncate max-w-full">Home</span>
+        </button>
+        <button data-tab="academics" type="button" class="mnav-btn ios-dock-btn">
+          <i data-lucide="book-open" class="w-[19px] h-[19px]" aria-hidden="true"></i>
+          <span class="truncate max-w-full">Academics</span>
+        </button>
+        <button data-tab="opportunities" type="button" class="mnav-btn ios-dock-btn">
+          <i data-lucide="briefcase" class="w-[19px] h-[19px]" aria-hidden="true"></i>
+          <span class="truncate max-w-full">Opps</span>
+        </button>
+        <button data-tab="people" type="button" class="mnav-btn ios-dock-btn">
+          <i data-lucide="users" class="w-[19px] h-[19px]" aria-hidden="true"></i>
+          <span class="truncate max-w-full">People</span>
+        </button>
+        <button id="mobile-more-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="mobile-more-menu" class="ios-dock-btn">
+          <i data-lucide="grid-2x2" class="w-[19px] h-[19px]" aria-hidden="true"></i>
+          <span class="truncate max-w-full">More</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ==================== STRUCTURED GLASS RECORD DETAIL MODAL ==================== -->
+  <div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="glass-modal w-full sm:max-w-2xl rounded-t-2xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/70 flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <div id="detail-badges" class="flex flex-wrap items-center gap-1.5 mb-1.5"></div>
+          <h2 id="detail-title" class="text-base sm:text-lg font-bold text-[#18212F] leading-snug"></h2>
+        </div>
+        <button id="close-detail" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white/80 shrink-0" aria-label="Close detail dialog">
+          <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div id="detail-body" class="p-5 overflow-y-auto space-y-4 text-sm"></div>
+      <div id="detail-footer" class="px-5 py-3.5 border-t border-slate-200/70 bg-white/60 flex flex-wrap items-center justify-between gap-2"></div>
+    </div>
+  </div>
+
+  <!-- ==================== GUIDED GLASS PUBLISHING & EDIT MODAL ==================== -->
+  <div id="form-modal" role="dialog" aria-modal="true" aria-labelledby="form-modal-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="glass-modal w-full sm:max-w-2xl rounded-t-2xl sm:rounded-2xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/70 flex items-center justify-between gap-3">
+        <div>
+          <h2 id="form-modal-title" class="text-base font-bold text-[#18212F]">Create Information</h2>
+          <p id="form-modal-subtitle" class="text-xs text-[#64748B]">Enter accurate campus details and verify the summary before publishing.</p>
+        </div>
+        <button id="close-form" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white/80" aria-label="Close dialog">
+          <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div id="form-step-bar" class="px-5 py-2.5 bg-white/50 border-b border-slate-200/70 flex items-center justify-between text-[11px] font-semibold">
+        <span data-step-ind="1" class="step-ind">1. Category</span>
+        <span class="text-slate-300">&rarr;</span>
+        <span data-step-ind="2" class="step-ind">2. Details</span>
+        <span class="text-slate-300">&rarr;</span>
+        <span data-step-ind="3" class="step-ind">3. Contact &amp; Source</span>
+        <span class="text-slate-300">&rarr;</span>
+        <span data-step-ind="4" class="step-ind">4. Confirm &amp; Publish</span>
+      </div>
+
+      <form id="record-form" novalidate class="p-5 overflow-y-auto space-y-4 text-sm flex-1">
+        <div id="form-reverify-notice" class="hidden text-xs text-blue-900 bg-blue-50/90 border border-blue-200 rounded-xl px-3.5 py-2.5">
+          <strong>Audit Trail Active:</strong> You will review a before-and-after summary before saving. All changes are recorded in the internal audit history.
+        </div>
+        <div id="form-step-content" class="space-y-3.5"></div>
+        <div id="form-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3.5 py-2.5"></div>
+      </form>
+
+      <div id="form-footer" class="px-5 py-3.5 border-t border-slate-200/70 bg-white/60 flex flex-wrap items-center justify-between gap-2"></div>
+    </div>
+  </div>
+
+  <!-- ==================== STUDENT REPORT INFORMATION MODAL ==================== -->
+  <div id="report-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-md rounded-2xl p-5 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 id="report-modal-title" class="text-base font-bold text-[#18212F]">Report Information</h3>
+          <p id="report-modal-subtitle" class="text-xs text-[#64748B] mt-0.5"></p>
+        </div>
+        <button id="close-report" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:bg-white/80" aria-label="Close report dialog">
+          <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
+        </button>
+      </div>
+      <form id="report-form" class="space-y-3.5">
+        <div>
+          <label for="report-reason-select" class="block text-xs font-semibold text-[#18212F] mb-1">Reason for Reporting <span class="text-crimson-600">*</span></label>
+          <select id="report-reason-select" required class="w-full min-h-[42px] px-3 glass-input rounded-xl text-sm"></select>
+        </div>
+        <div>
+          <label for="report-explanation-input" class="block text-xs font-semibold text-[#18212F] mb-1">Additional Explanation (Optional)</label>
+          <textarea id="report-explanation-input" rows="3" maxlength="600" placeholder="Share what appears incorrect, outdated, or broken..." class="w-full px-3 py-2.5 glass-input rounded-xl text-sm"></textarea>
+        </div>
+        <p class="text-[11px] text-[#64748B]">Reports are sent privately to the Administrator for review and are not displayed publicly.</p>
+        <div id="report-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3 py-2"></div>
+        <div class="flex items-center justify-end gap-2">
+          <button id="cancel-report" type="button" class="min-h-[42px] px-4 rounded-xl glass-btn-secondary text-xs font-semibold">Cancel</button>
+          <button type="submit" class="min-h-[42px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MANDATORY CONFIRMATION SUMMARY MODAL (ADMIN & FACULTY) ==================== -->
+  <div id="admin-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="admin-confirm-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="glass-modal w-full sm:max-w-xl rounded-t-2xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/70 flex items-start justify-between gap-3">
+        <div>
+          <h3 id="admin-confirm-title" class="text-base font-bold text-[#18212F]">Review Action Details</h3>
+          <p id="admin-confirm-subtitle" class="text-xs text-[#64748B] mt-0.5"></p>
+        </div>
+        <button id="close-admin-confirm" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:bg-white/80" aria-label="Close review dialog">
+          <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div id="admin-confirm-body" class="p-5 overflow-y-auto space-y-3.5 text-sm flex-1"></div>
+      <div id="admin-confirm-reason-wrap" class="hidden px-5 pb-3 space-y-1.5">
+        <label for="admin-confirm-reason-input" class="block text-xs font-semibold text-[#18212F]">Reason / Audit Note <span class="text-crimson-600">*</span></label>
+        <textarea id="admin-confirm-reason-input" rows="2" placeholder="Provide a clear reason for the audit log..." class="w-full px-3 py-2 glass-input rounded-xl text-xs"></textarea>
+      </div>
+      <div id="admin-confirm-error" role="alert" class="hidden mx-5 mb-3 text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3 py-2"></div>
+      <div id="admin-confirm-footer" class="px-5 py-3.5 border-t border-slate-200/70 bg-white/60 flex flex-wrap items-center justify-between gap-2"></div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN CREATE FACULTY ACCOUNT MODAL ==================== -->
+  <div id="faculty-account-modal" role="dialog" aria-modal="true" aria-labelledby="fac-acc-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="glass-modal w-full sm:max-w-2xl rounded-t-2xl sm:rounded-2xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200/70 flex items-center justify-between gap-3">
+        <div>
+          <h2 id="fac-acc-title" class="text-base font-bold text-[#18212F]">Create Official Faculty Account</h2>
+          <p class="text-xs text-[#64748B]">Enter official institutional details. You will review all fields before account creation.</p>
+        </div>
+        <button id="close-fac-acc" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:bg-white/80" aria-label="Close faculty account dialog">
+          <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
+        </button>
+      </div>
+      <form id="fac-acc-form" novalidate class="p-5 overflow-y-auto space-y-3.5 text-sm flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Faculty Name <span class="text-crimson-600">*</span></label>
+            <input name="Faculty_Name" type="text" required placeholder="e.g. Dr. Kavitha Rajendran" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Faculty / Employee ID <span class="text-crimson-600">*</span></label>
+            <input name="Employee_ID" type="text" required placeholder="e.g. HIT-FAC-009" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Official Email Address <span class="text-crimson-600">*</span></label>
+            <input name="Official_Email" type="email" required placeholder="e.g. kavitha.cse@hit.edu.in" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Department <span class="text-crimson-600">*</span></label>
+            <select id="fac-acc-dept" name="Department_ID" required class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Designation <span class="text-crimson-600">*</span></label>
+            <input name="Designation" type="text" required placeholder="e.g. Assistant Professor" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Qualifications <span class="text-crimson-600">*</span></label>
+            <input name="Qualifications" type="text" required placeholder="e.g. Ph.D. (CSE), M.E." class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Subjects Handled <span class="text-crimson-600">*</span></label>
+            <input name="Subjects_Handled" type="text" required placeholder="e.g. Operating Systems, Compiler Design" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Official Contact Details <span class="text-crimson-600">*</span></label>
+            <input name="Official_Contact" type="text" required placeholder="e.g. +91 0422-2611833 Ext. 214" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Research Interests (Optional)</label>
+            <input name="Research_Interests" type="text" placeholder="e.g. Embedded AI, Edge Systems" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Photograph URL (Optional, HTTPS)</label>
+            <input name="Photograph" type="url" placeholder="https://..." class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+          </div>
+        </div>
+
+        <div class="rounded-xl glass-subtle p-3.5 space-y-2">
+          <div class="text-xs font-bold text-[#18212F]">Initial Account Credentials (Hashed &amp; Protected)</div>
+          <div>
+            <label class="block text-xs font-semibold text-[#18212F] mb-1">Temporary Password (min 8 chars) <span class="text-crimson-600">*</span></label>
+            <input name="Temp_Password" type="password" required minlength="8" placeholder="Temporary password (never stored in plain text)" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+            <p class="text-[11px] text-[#64748B] mt-1">The faculty member will be required to change this password on first login.</p>
+          </div>
+        </div>
+
+        <div class="rounded-xl glass-subtle p-3.5 space-y-2 text-xs">
+          <div class="font-bold text-[#18212F]">Assigned Faculty Permissions</div>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="perm_canPublish" checked class="rounded text-crimson-600" /> Direct Publish Information</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="perm_canEditOwn" checked class="rounded text-crimson-600" /> Edit Own Published Posts</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="perm_canMarkUrgent" checked class="rounded text-crimson-600" /> Mark Urgent Announcements</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="perm_canArchiveOwn" checked class="rounded text-crimson-600" /> Archive Outdated Own Posts</label>
+        </div>
+
+        <div id="fac-acc-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3.5 py-2.5"></div>
+      </form>
+      <div class="px-5 py-3.5 border-t border-slate-200/70 bg-white/60 flex items-center justify-between gap-2">
+        <button id="cancel-fac-acc" type="button" class="min-h-[40px] px-4 rounded-xl glass-btn-secondary text-xs font-semibold">Cancel</button>
+        <button id="review-fac-acc" type="button" class="min-h-[40px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Review Faculty Details &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FIRST-LOGIN MANDATORY PASSWORD CHANGE MODAL ==================== -->
+  <div id="password-change-modal" role="dialog" aria-modal="true" aria-labelledby="pw-change-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-md rounded-2xl p-5 space-y-4">
+      <div>
+        <h3 id="pw-change-title" class="text-base font-bold text-[#18212F]">Change Temporary Password Required</h3>
+        <p class="text-xs text-[#64748B] mt-1">Your faculty account was issued temporary credentials. Set a new personal password before accessing your workspace.</p>
+      </div>
+      <form id="pw-change-form" class="space-y-3">
+        <div>
+          <label for="pw-current-input" class="block text-xs font-semibold text-[#18212F] mb-1">Temporary / Current Password <span class="text-crimson-600">*</span></label>
+          <input id="pw-current-input" type="password" required class="w-full min-h-[42px] px-3 glass-input rounded-xl text-sm" />
+        </div>
+        <div>
+          <label for="pw-new-input" class="block text-xs font-semibold text-[#18212F] mb-1">New Password (min 8 characters) <span class="text-crimson-600">*</span></label>
+          <input id="pw-new-input" type="password" required minlength="8" class="w-full min-h-[42px] px-3 glass-input rounded-xl text-sm" />
+        </div>
+        <div>
+          <label for="pw-confirm-input" class="block text-xs font-semibold text-[#18212F] mb-1">Confirm New Password <span class="text-crimson-600">*</span></label>
+          <input id="pw-confirm-input" type="password" required minlength="8" class="w-full min-h-[42px] px-3 glass-input rounded-xl text-sm" />
+        </div>
+        <div id="pw-change-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3 py-2"></div>
+        <div class="flex items-center justify-between gap-2 pt-1">
+          <button id="pw-change-logout" type="button" class="min-h-[40px] px-3.5 rounded-xl glass-btn-secondary text-xs font-semibold">Logout</button>
+          <button type="submit" class="min-h-[40px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== FACULTY PROFILE CORRECTION REQUEST MODAL ==================== -->
+  <div id="profile-request-modal" role="dialog" aria-modal="true" aria-labelledby="profile-req-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-md rounded-2xl p-5 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 id="profile-req-title" class="text-base font-bold text-[#18212F]">Request Official Profile Correction</h3>
+          <p class="text-xs text-[#64748B] mt-0.5">Institutional identity fields are managed by Administrators. Submit a correction request below.</p>
+        </div>
+        <button id="close-profile-req" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:bg-white/80" aria-label="Close request dialog">
+          <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
+        </button>
+      </div>
+      <form id="profile-req-form" class="space-y-3">
+        <div>
+          <label for="profile-req-field" class="block text-xs font-semibold text-[#18212F] mb-1">Field to Update <span class="text-crimson-600">*</span></label>
+          <select id="profile-req-field" class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm">
+            <option value="Designation">Designation</option>
+            <option value="Qualifications">Qualifications</option>
+            <option value="Subjects_Handled">Subjects Handled</option>
+            <option value="Official_Contact">Official Contact</option>
+            <option value="Research_Interests">Research Interests</option>
+            <option value="Faculty_Name">Faculty Name</option>
+          </select>
+        </div>
+        <div>
+          <label for="profile-req-value" class="block text-xs font-semibold text-[#18212F] mb-1">Requested Updated Value <span class="text-crimson-600">*</span></label>
+          <input id="profile-req-value" type="text" required class="w-full min-h-[40px] px-3 glass-input rounded-xl text-sm" />
+        </div>
+        <div>
+          <label for="profile-req-reason" class="block text-xs font-semibold text-[#18212F] mb-1">Reason for Correction <span class="text-crimson-600">*</span></label>
+          <textarea id="profile-req-reason" rows="2" required class="w-full px-3 py-2 glass-input rounded-xl text-sm"></textarea>
+        </div>
+        <div id="profile-req-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3 py-2"></div>
+        <div class="flex items-center justify-end gap-2">
+          <button id="cancel-profile-req" type="button" class="min-h-[40px] px-4 rounded-xl glass-btn-secondary text-xs font-semibold">Cancel</button>
+          <button type="submit" class="min-h-[40px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MANDATORY REASON MODAL ==================== -->
+  <div id="reason-modal" role="dialog" aria-modal="true" aria-labelledby="reason-modal-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-md rounded-2xl p-5 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 id="reason-modal-title" class="text-base font-bold text-[#18212F]">Explanation Required</h3>
+          <p id="reason-modal-subtitle" class="text-xs text-[#64748B] mt-0.5"></p>
+        </div>
+        <button id="close-reason" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:bg-white/80" aria-label="Close reason dialog">
+          <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
+        </button>
+      </div>
+      <form id="reason-form" class="space-y-3">
+        <div>
+          <label for="reason-input" class="block text-xs font-semibold text-[#18212F] mb-1">Administrator Feedback / Reason <span class="text-crimson-600">*</span></label>
+          <textarea id="reason-input" rows="3" placeholder="Provide clear feedback for the audit log..." class="w-full px-3 py-2.5 glass-input rounded-xl text-sm"></textarea>
+        </div>
+        <div id="reason-error" role="alert" class="hidden text-xs text-rose-800 bg-rose-50/90 border border-rose-200 rounded-xl px-3 py-2"></div>
+        <div class="flex items-center justify-end gap-2">
+          <button id="cancel-reason" type="button" class="min-h-[44px] px-4 rounded-xl glass-btn-secondary text-xs font-semibold">Cancel</button>
+          <button type="submit" class="min-h-[44px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== RESET DEMO DATA MODAL ==================== -->
+  <div id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-full bg-gold-100 text-gold-800 flex items-center justify-center shrink-0">
+          <i data-lucide="rotate-ccw" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h3 id="confirm-modal-title" class="text-base font-bold text-[#18212F]">Reset Demo Data?</h3>
+          <p class="text-xs text-[#64748B] mt-1 leading-relaxed">DEMO ACTION: Restores the original sample records, faculty accounts, reports, and audit history in local browser storage.</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2">
+        <button id="cancel-reset" type="button" class="min-h-[44px] px-4 rounded-xl glass-btn-secondary text-xs font-semibold">Cancel</button>
+        <button id="confirm-reset" type="button" class="min-h-[44px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Reset Demo Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CLEAR SEARCH HISTORY CONFIRMATION MODAL ==================== -->
+  <div id="clear-history-modal" role="dialog" aria-modal="true" aria-labelledby="clear-history-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-full bg-crimson-50 border border-crimson-200 text-crimson-600 flex items-center justify-center shrink-0">
+          <i data-lucide="trash-2" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h3 id="clear-history-title" class="text-base font-bold text-[#18212F]">Clear Search History</h3>
+          <p class="text-xs text-[#64748B] mt-1 leading-relaxed">Remove all saved recent search terms from this browser.</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2">
+        <button id="cancel-clear-history" type="button" class="min-h-[44px] px-4 rounded-xl glass-btn-secondary text-xs font-semibold">Cancel</button>
+        <button id="confirm-clear-history" type="button" class="min-h-[44px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== APPEARANCE & THEME SETTINGS MODAL ==================== -->
+  <div id="theme-modal" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 id="theme-modal-title" class="text-base font-bold text-[#18212F]">Appearance &amp; Theme</h3>
+          <p class="text-xs text-[#64748B] mt-0.5">Active: <span id="theme-current-summary" class="font-semibold text-[#18212F]">System Default</span></p>
+        </div>
+        <button id="close-theme-modal" type="button" class="touch-target flex items-center justify-center rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white/80" aria-label="Close appearance settings">
+          <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2" role="group" aria-label="Select application theme">
+        <button type="button" data-theme-choice="system" aria-pressed="false" class="theme-choice-btn w-full min-h-[52px] px-3.5 py-2.5 rounded-xl flex items-center gap-3 text-left">
+          <span class="w-9 h-9 rounded-lg glass-subtle flex items-center justify-center shrink-0">
+            <i data-lucide="smartphone" class="w-4 h-4" aria-hidden="true"></i>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-semibold">System Default</span>
+            <span class="block text-[11px] text-[#64748B]">Automatically matches Android / OS theme</span>
+          </span>
+        </button>
+
+        <button type="button" data-theme-choice="light" aria-pressed="false" class="theme-choice-btn w-full min-h-[52px] px-3.5 py-2.5 rounded-xl flex items-center gap-3 text-left">
+          <span class="w-9 h-9 rounded-lg glass-subtle flex items-center justify-center shrink-0">
+            <i data-lucide="sun" class="w-4 h-4" aria-hidden="true"></i>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-semibold">Light Theme</span>
+            <span class="block text-[11px] text-[#64748B]">Bright frosted glass appearance</span>
+          </span>
+        </button>
+
+        <button type="button" data-theme-choice="dark" aria-pressed="false" class="theme-choice-btn w-full min-h-[52px] px-3.5 py-2.5 rounded-xl flex items-center gap-3 text-left">
+          <span class="w-9 h-9 rounded-lg glass-subtle flex items-center justify-center shrink-0">
+            <i data-lucide="moon" class="w-4 h-4" aria-hidden="true"></i>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-semibold">Dark Theme</span>
+            <span class="block text-[11px] text-[#64748B]">Deep slate glass appearance</span>
+          </span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-end">
+        <button id="done-theme-modal" type="button" class="min-h-[40px] px-4 rounded-xl glass-btn-primary text-xs font-semibold">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glass Toast Notification -->
+  <div id="toast" role="status" aria-live="polite" aria-atomic="true" class="hidden fixed bottom-20 md:bottom-6 right-4 z-50 bg-navy-900/90 backdrop-blur-md border border-white/15 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-xl flex items-center gap-2">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0" aria-hidden="true"></i>
+    <span id="toast-msg"></span>
+  </div>
+
+
+  <!-- Modular Application Scripts (Ordered for zero-bundler Android & Capacitor compatibility) -->
+  <script defer src="js/constants.js"></script>
+  <script defer src="js/seedData.js"></script>
+  <script defer src="js/utils.js"></script>
+  <script defer src="js/supabaseClient.js"></script>
+  <script defer src="js/dataService.js"></script>
+  <script defer src="js/authService.js"></script>
+  <script defer src="js/ui/badges.js"></script>
+  <script defer src="js/ui/cards.js"></script>
+  <script defer src="js/ui/dashboards.js"></script>
+  <script defer src="js/ui/sections.js"></script>
+  <script defer src="js/ui/modals.js"></script>
+  <script defer src="js/ui/wizard.js"></script>
+  <script defer src="js/themeService.js"></script>
+  <script defer src="js/app.js"></script>
+</body>
+</html>
